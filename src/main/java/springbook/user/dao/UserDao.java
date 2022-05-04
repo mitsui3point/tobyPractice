@@ -2,7 +2,6 @@ package springbook.user.dao;
 
 
 import springbook.user.dao.connection.ConnectionMaker;
-import springbook.user.dao.daum.DConnectionMaker;
 import springbook.user.domain.User;
 
 import java.sql.Connection;
@@ -12,8 +11,8 @@ import java.sql.SQLException;
 
 public class UserDao {
     private ConnectionMaker connectionMaker;
-    public UserDao() {
-        connectionMaker = new DConnectionMaker();
+    public UserDao(ConnectionMaker connectionMaker) {
+        this.connectionMaker = connectionMaker;
     }
     public void add(User user) throws SQLException, ClassNotFoundException {
         Connection c = connectionMaker.makeConnection();
