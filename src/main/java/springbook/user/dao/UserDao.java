@@ -5,7 +5,7 @@ import springbook.user.domain.User;
 
 import java.sql.*;
 
-public class UserDao {
+public abstract class UserDao {
     public void add(User user) throws SQLException, ClassNotFoundException {
         Connection c = getConnection();
         PreparedStatement ps = c.prepareStatement(
@@ -40,10 +40,11 @@ public class UserDao {
         return user;
     }
 
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
-        Class.forName("org.mariadb.jdbc.Driver");
-        Connection c = DriverManager.getConnection(
-                "jdbc:mariadb://localhost:3306/spring", "root", "password");
-        return c;
-    }
+    /**
+     * Connection abstract method
+     * @return Connection
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
+    public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
 }

@@ -1,13 +1,17 @@
 package springbook.user.test;
 
 import springbook.user.dao.UserDao;
+import springbook.user.dao.naver.NUserDao;
 import springbook.user.domain.User;
 
 import java.sql.SQLException;
 
 public class Test {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        UserDao dao = new UserDao();
+        // 테스트코드가 바뀜
+        // UserDao dao = new UserDao();
+        // UserDao dao = new DUserDao();
+        UserDao dao = new NUserDao();
         User user = new User();
         user.setId("yhkim");
         user.setName("김윤호");
