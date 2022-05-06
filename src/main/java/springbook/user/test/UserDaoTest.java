@@ -1,8 +1,6 @@
 package springbook.user.test;
 
 import springbook.user.dao.UserDao;
-import springbook.user.dao.connection.ConnectionMaker;
-import springbook.user.dao.daum.DConnectionMaker;
 import springbook.user.dao.factory.DaoFactory;
 import springbook.user.domain.User;
 
