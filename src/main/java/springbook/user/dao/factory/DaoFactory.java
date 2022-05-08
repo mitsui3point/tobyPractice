@@ -12,15 +12,15 @@ import springbook.user.dao.daum.DConnectionMaker;
 public class DaoFactory {
     @Bean // 오브젝트 생성을 담당하는 IoC 용 메소드라는 표시
     public UserDao userDao() {
-        return new UserDao(connectionMaker());
+        return new UserDao();
     }
     @Bean
     public AccountDao accountDao() {
-        return new AccountDao(connectionMaker());
+        return new AccountDao();
     }
     @Bean
     public MessageDao messageDao() {
-        return new MessageDao(connectionMaker());
+        return new MessageDao();
     }
     @Bean
     public ConnectionMaker connectionMaker() {

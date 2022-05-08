@@ -2,6 +2,7 @@ package springbook.user.dao;
 
 
 import springbook.user.dao.connection.ConnectionMaker;
+import springbook.user.dao.factory.DaoFactory;
 import springbook.user.domain.User;
 
 import java.sql.Connection;
@@ -11,8 +12,9 @@ import java.sql.SQLException;
 // 예시를 위해 임시생성
 public class AccountDao {
     private ConnectionMaker connectionMaker;
-    public AccountDao(ConnectionMaker connectionMaker) {
-        this.connectionMaker = connectionMaker;
+    public AccountDao() {
+        DaoFactory daoFactory = new DaoFactory();
+        this.connectionMaker = daoFactory.connectionMaker();
     }
     public void add(User user) throws SQLException, ClassNotFoundException {
         Connection c = connectionMaker.makeConnection();
