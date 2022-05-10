@@ -1,7 +1,6 @@
 package springbook.user.dao;
 
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import springbook.user.dao.connection.ConnectionMaker;
 import springbook.user.dao.factory.DaoFactory;
 import springbook.user.domain.User;
@@ -13,9 +12,8 @@ import java.sql.SQLException;
 // 예시를 위해 임시생성
 public class MessageDao {
     private ConnectionMaker connectionMaker;
-    public MessageDao() {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
-        this.connectionMaker = context.getBean("connectionMaker", ConnectionMaker.class);
+    public MessageDao(ConnectionMaker connectionMaker) {
+        this.connectionMaker = connectionMaker;
     }
     public void add(User user) throws SQLException, ClassNotFoundException {
         Connection c = connectionMaker.makeConnection();
