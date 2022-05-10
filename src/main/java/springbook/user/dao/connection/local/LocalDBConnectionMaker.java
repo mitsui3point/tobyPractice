@@ -1,4 +1,4 @@
-package springbook.user.dao.naver;
+package springbook.user.dao.connection.local;
 
 import springbook.user.dao.connection.ConnectionMaker;
 
@@ -6,7 +6,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class NConnectionMaker implements ConnectionMaker {
+public class LocalDBConnectionMaker implements ConnectionMaker {
+
     @Override
     public Connection makeConnection() throws ClassNotFoundException, SQLException {
         Class.forName("org.mariadb.jdbc.Driver");

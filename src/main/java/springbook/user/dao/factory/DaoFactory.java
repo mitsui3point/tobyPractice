@@ -6,7 +6,10 @@ import springbook.user.dao.AccountDao;
 import springbook.user.dao.MessageDao;
 import springbook.user.dao.UserDao;
 import springbook.user.dao.connection.ConnectionMaker;
-import springbook.user.dao.daum.DConnectionMaker;
+import springbook.user.dao.connection.daum.DConnectionMaker;
+import springbook.user.dao.connection.local.LocalDBConnectionMaker;
+import springbook.user.dao.connection.naver.NConnectionMaker;
+import springbook.user.dao.connection.production.ProductionDBConnectionMaker;
 
 @Configuration // application context OR bean factory 가 사용할 설정정보라는 표시
 public class DaoFactory {
@@ -25,5 +28,8 @@ public class DaoFactory {
     @Bean
     public ConnectionMaker connectionMaker() {
         return new DConnectionMaker();
+//        return new NConnectionMaker();
+//        return new ProductionDBConnectionMaker();
+//        return new LocalDBConnectionMaker();
     }
 }
