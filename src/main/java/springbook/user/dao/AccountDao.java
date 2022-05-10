@@ -1,6 +1,7 @@
 package springbook.user.dao;
 
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import springbook.user.dao.connection.ConnectionMaker;
 import springbook.user.dao.factory.DaoFactory;
 import springbook.user.domain.User;
@@ -13,8 +14,8 @@ import java.sql.SQLException;
 public class AccountDao {
     private ConnectionMaker connectionMaker;
     public AccountDao() {
-        DaoFactory daoFactory = new DaoFactory();
-        this.connectionMaker = daoFactory.connectionMaker();
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
+        this.connectionMaker = context.getBean("connectionMaker", ConnectionMaker.class);
     }
     public void add(User user) throws SQLException, ClassNotFoundException {
         Connection c = connectionMaker.makeConnection();

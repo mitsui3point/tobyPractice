@@ -14,8 +14,8 @@ import java.sql.SQLException;
 public class UserDao {
     private ConnectionMaker connectionMaker;
     public UserDao() {
-        DaoFactory daoFactory = new DaoFactory();
-        this.connectionMaker = daoFactory.connectionMaker();
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
+        this.connectionMaker = context.getBean("connectionMaker", ConnectionMaker.class);
     }
     public void add(User user) throws SQLException, ClassNotFoundException {
         Connection c = connectionMaker.makeConnection();

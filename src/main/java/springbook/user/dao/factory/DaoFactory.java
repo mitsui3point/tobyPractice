@@ -10,15 +10,15 @@ import springbook.user.dao.daum.DConnectionMaker;
 
 @Configuration // application context OR bean factory 가 사용할 설정정보라는 표시
 public class DaoFactory {
-    @Bean // 오브젝트 생성을 담당하는 IoC 용 메소드라는 표시
+//    @Bean // 오브젝트 생성을 담당하는 IoC 용 메소드라는 표시
     public UserDao userDao() {
         return new UserDao();
     }
-    @Bean
+//    @Bean
     public AccountDao accountDao() {
         return new AccountDao();
     }
-    @Bean
+//    @Bean
     public MessageDao messageDao() {
         return new MessageDao();
     }
