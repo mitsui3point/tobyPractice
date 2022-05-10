@@ -8,12 +8,9 @@ import springbook.user.dao.UserDao;
 import springbook.user.dao.connection.ConnectionMaker;
 import springbook.user.dao.connection.counting.CountingConnectionMaker;
 import springbook.user.dao.connection.daum.DConnectionMaker;
-import springbook.user.dao.connection.local.LocalDBConnectionMaker;
-import springbook.user.dao.connection.naver.NConnectionMaker;
-import springbook.user.dao.connection.production.ProductionDBConnectionMaker;
 
 @Configuration // application context OR bean factory 가 사용할 설정정보라는 표시
-public class DaoFactory {
+public class CountingDaoFactory {
     @Bean // 오브젝트 생성을 담당하는 IoC 용 메소드라는 표시
     public UserDao userDao() {
         return new UserDao(this.connectionMaker());
@@ -28,6 +25,11 @@ public class DaoFactory {
     }
     @Bean
     public ConnectionMaker connectionMaker() {
+//        System.out.println("this.realConnectionMaker() == realConnectionMaker() :" + (this.realConnectionMaker() == realConnectionMaker()));
+        return new CountingConnectionMaker(this.realConnectionMaker());
+    }
+    @Bean
+    public ConnectionMaker realConnectionMaker() {
         return new DConnectionMaker();
 //        return new NConnectionMaker();
 //        return new ProductionDBConnectionMaker();
