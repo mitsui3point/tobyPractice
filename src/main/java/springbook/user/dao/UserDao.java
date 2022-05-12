@@ -13,7 +13,8 @@ import java.sql.SQLException;
 
 public class UserDao {
     private ConnectionMaker connectionMaker;
-    public UserDao(ConnectionMaker connectionMaker) {
+    // 수정자 메서드를 이용하여 생성자 DI 를 대체
+    public void setConnectionMaker(ConnectionMaker connectionMaker) {
         this.connectionMaker = connectionMaker;
     }
     public void add(User user) throws SQLException, ClassNotFoundException {

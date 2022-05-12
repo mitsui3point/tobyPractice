@@ -13,15 +13,21 @@ import springbook.user.dao.connection.daum.DConnectionMaker;
 public class CountingDaoFactory {
     @Bean // 오브젝트 생성을 담당하는 IoC 용 메소드라는 표시
     public UserDao userDao() {
-        return new UserDao(this.connectionMaker());
+        UserDao userDao = new UserDao();
+        userDao.setConnectionMaker(this.connectionMaker());
+        return userDao;
     }
     @Bean
     public AccountDao accountDao() {
-        return new AccountDao(this.connectionMaker());
+        AccountDao accountDao = new AccountDao();
+        accountDao.setConnectionMaker(this.connectionMaker());
+        return accountDao;
     }
     @Bean
     public MessageDao messageDao() {
-        return new MessageDao(this.connectionMaker());
+        MessageDao messageDao = new MessageDao();
+        messageDao.setConnectionMaker(this.connectionMaker());
+        return messageDao;
     }
     @Bean
     public ConnectionMaker connectionMaker() {
