@@ -11,13 +11,18 @@ import java.sql.SQLException;
 
 public class UserDaoTest {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-//        ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml"); // classpath xml : src/main/resources
-        ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
+        ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml"); // classpath xml : src/main/resources
         UserDao dao = context.getBean("userDao", UserDao.class);
         User user = new User();
         user.setId("yhkim");
         user.setName("김윤호");
         user.setPassword("notmerried");
+
+        // 임시코드 생성
+        if(!user.getId().isEmpty()) {
+            dao.del(user.getId());
+            System.out.println(user.getId() + "이전 데이터 삭제 성공");
+        }
 
         dao.add(user);
 
