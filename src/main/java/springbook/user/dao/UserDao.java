@@ -1,26 +1,23 @@
 package springbook.user.dao;
 
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import springbook.user.dao.connection.ConnectionMaker;
-import springbook.user.dao.factory.DaoFactory;
 import springbook.user.domain.User;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDao {
-    private ConnectionMaker connectionMaker;
+    private DataSource dataSource;
     // 수정자 메서드를 이용하여 생성자 DI 를 대체
-    public void setConnectionMaker(ConnectionMaker connectionMaker) {
-        this.connectionMaker = connectionMaker;
+    public void setDataSource (DataSource dataSource) {
+        this.dataSource = dataSource;
     }
     public void add(User user) throws SQLException, ClassNotFoundException {
-        Connection c = connectionMaker.makeConnection();
+        Connection c = this.dataSource.getConnection();
         PreparedStatement ps = c.prepareStatement(
-
                 "insert into users(id, name, password) values(?, ?, ?)");
         ps.setString(1, user.getId());
         ps.setString(2, user.getName());
@@ -33,7 +30,7 @@ public class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = connectionMaker.makeConnection();
+        Connection c = this.dataSource.getConnection();
         PreparedStatement ps = c.prepareStatement(
                 "select * from users where id = ?");
         ps.setString(1, id);

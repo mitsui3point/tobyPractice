@@ -3,10 +3,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-
-    <bean id="connectionMaker" class="springbook.user.dao.connection.daum.DConnectionMaker" />
-
-    <bean id="userDao" class="springbook.user.dao.UserDao">
-        <property name="connectionMaker" ref="connectionMaker" />
-    </bean>
+    <!--  현재 AnnotationConfigApplicationContext 를 UserDaoTest.java 가 사용하고 있기 때문에 applicationContext.xml 은 사용되지 않는다. -->
+    <bean id="userDao" class="springbook.user.dao.UserDao" />
 </beans>
