@@ -1,10 +1,8 @@
 package springbook.user.test;
 
 import org.junit.Test;
-import org.junit.Assert;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
-
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 
@@ -19,17 +17,16 @@ public class UserDaoTest {
 
         ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml"); // classpath xml : src/main/resources
         UserDao dao = context.getBean("userDao", UserDao.class);
+        dao.deleteAll();
+        assertThat(dao.getCount(), is(0));
+
         User user = new User();
         user.setId("yhkim2");
         user.setName("김윤호2");
         user.setPassword("notmerried");
 
-        // 임시코드 생성
-        if(!user.getId().isEmpty()) {
-            dao.del(user.getId());
-        }
-
         dao.add(user);
+        assertThat(dao.getCount(), is(1));
 
         User user2 = dao.get(user.getId());
 
