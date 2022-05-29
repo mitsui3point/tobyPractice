@@ -60,6 +60,15 @@ public class UserDaoTest {
         assertThat(dao.getCount(), is(3));
     }
 
+    /**
+     * getUserFailure() 테스트 코드에 나타난 기능
+     * 		|단계					|내용									| 코드
+     * |조건	|어떤 조건을 가지고 있는지	|가져올 사용자 정보가 존재하지 않는 경우에		| dao.deleteAll() , asserThat(dao.getCount(), is(0))
+     * |행위	|무엇을 할 때				|존재하지 않는 id로 get()을 실행하면		| get("unknown_id")
+     * |결과	|어떤 결과가 나온다		|특별한 예외가 던져진다						| @Test(expected = EmptyResultDataAccessException.class)
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     @Test(expected = EmptyResultDataAccessException.class)
     public void getUserFailure() throws SQLException, ClassNotFoundException {
         ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
