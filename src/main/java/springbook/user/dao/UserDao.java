@@ -55,6 +55,7 @@ public class UserDao {
         /* 결과가 없으면 User 는 null 상태 그대로일 것이다.
         이를 확인해서 예외를 던져준다 */
         if(user == null) throw new EmptyResultDataAccessException(1);
+        if(user != null) throw new RuntimeException();
 
         return user;
     }
