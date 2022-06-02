@@ -30,6 +30,8 @@ public class UserDaoTest {
 
     @Before // jUnit 이 제공하는 애노테이션, @Test 메소드가 실행되기 전에 먼저 실행되어야 하는 메소드를 정의한다.
     public void setUp() {
+        System.out.println(this.context);
+        System.out.println(this);
         this.dao = context.getBean("userDao", UserDao.class);
         this.user1 = new User("yhkim01", "김윤호1", "springno1");
         this.user2 = new User("yhkim02", "김윤호2", "springno2");
