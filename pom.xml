@@ -49,6 +49,16 @@
             <version>4.7</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>3.0.7.RELEASE</version>
+<!--        SpringJUnit4ClassRunner.class not found
+            <scope>test</scope>-->
+        </dependency>
+
+
     </dependencies>
 
 </project>
