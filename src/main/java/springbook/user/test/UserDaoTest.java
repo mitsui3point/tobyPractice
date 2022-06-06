@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -20,19 +19,23 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)// 스프링의 테스트 컨텍스트 프레임워크의 JUnit 확장기능 지정
 @ContextConfiguration(locations = "/applicationContext.xml")// 테스트 컨텍스트가 자동으로 만들어줄 애플리케이션 컨텍스트의 위치 지정
 public class UserDaoTest {
+    // 테스트 오브젝트가 만들어지고 나면 스프링 테스트 컨텍스트에 의해 자동으로 값이 주입된다.
+    // ApplicationContext.java 가 없는데 @Autowired 로 '타입에 의한 자동와이어링' 방식으로 DI 가 되었다. 어떻게 된 일일까? 이것은 스프링 애플리케이션 컨텍스트는 초기화할 때 자기 자신도 빈으로 등록하기 때문이다.
     @Autowired
-    private ApplicationContext context; // 테스트 오브젝트가 만들어지고 나면 스프링 테스트 컨텍스트에 의해 자동으로 값이 주입된다.
+    private ApplicationContext context;
+    // UserDao 타입 빈을 직접 DI 받는다
+    @Autowired
+    private UserDao dao;
 
-    private UserDao dao; // setUp() 메소드에서 만드는 오브젝트를 테스트 메소드에서 사용할수 있도록 인스턴스 변수로 선언한다.
     private User user1;
     private User user2;
     private User user3;
 
-    @Before // jUnit 이 제공하는 애노테이션, @Test 메소드가 실행되기 전에 먼저 실행되어야 하는 메소드를 정의한다.
+    // jUnit 이 제공하는 애노테이션, @Test 메소드가 실행되기 전에 먼저 실행되어야 하는 메소드를 정의한다.
+    @Before
     public void setUp() {
         System.out.println(this.context);
         System.out.println(this);
-        this.dao = context.getBean("userDao", UserDao.class);
         this.user1 = new User("yhkim01", "김윤호1", "springno1");
         this.user2 = new User("yhkim02", "김윤호2", "springno2");
         this.user3 = new User("yhkim03", "김윤호3", "springno3");
