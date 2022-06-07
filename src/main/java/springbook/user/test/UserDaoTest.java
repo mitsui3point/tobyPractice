@@ -2,14 +2,8 @@ package springbook.user.test;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 
@@ -19,16 +13,8 @@ import java.sql.SQLException;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-@RunWith(SpringJUnit4ClassRunner.class)// 스프링의 테스트 컨텍스트 프레임워크의 JUnit 확장기능 지정
-@ContextConfiguration(locations = "/testdb-applicationContext.xml")// 테스트 컨텍스트가 자동으로 만들어줄 애플리케이션 컨텍스트의 위치 지정 : 테스트용 applicationContext 파일
 public class UserDaoTest {
-    // 테스트 오브젝트가 만들어지고 나면 스프링 테스트 컨텍스트에 의해 자동으로 값이 주입된다.
-    // ApplicationContext.java 가 없는데 @Autowired 로 '타입에 의한 자동와이어링' 방식으로 DI 가 되었다. 어떻게 된 일일까? 이것은 스프링 애플리케이션 컨텍스트는 초기화할 때 자기 자신도 빈으로 등록하기 때문이다.
-    @Autowired
-    private ApplicationContext context;
-    // UserDao 타입 빈을 직접 DI 받는다
-    @Autowired
-    private UserDao dao;
+    private UserDao dao; // @Autowired 가 없다
 
     private User user1;
     private User user2;
@@ -37,6 +23,12 @@ public class UserDaoTest {
     // jUnit 이 제공하는 애노테이션, @Test 메소드가 실행되기 전에 먼저 실행되어야 하는 메소드를 정의한다.
     @Before
     public void setUp() {
+        // 오브젝트 생성, 관계설정 등을 모두 직접 해준다
+        dao = new UserDao();
+        DataSource dataSource = new SingleConnectionDataSource(
+                "jdbc:mariadb://localhost:3306/testdb", "root", "password", true
+        );
+        dao.setDataSource(dataSource);
         this.user1 = new User("yhkim01", "김윤호1", "springno1");
         this.user2 = new User("yhkim02", "김윤호2", "springno2");
         this.user3 = new User("yhkim03", "김윤호3", "springno3");
