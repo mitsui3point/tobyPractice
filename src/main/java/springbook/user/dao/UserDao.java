@@ -11,10 +11,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDao {
+
+    // UserDao 모든 메소드가 JdbcContext 를 사용하지 않으므로, 기존방법을 사용해서 동작하는 메소드를 위해 UserDao 가 아직은 DataSource 를 DI 받아야 함.
     private DataSource dataSource;
     // 수정자 메서드를 이용하여 생성자 DI 를 대체
     public void setDataSource (DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    // JdbcContext 를 DI 받도록 만든다.
+    private JdbcContext jdbcContext;
+    public void setJdbcContext(JdbcContext jdbcContext) {
+        this.jdbcContext = jdbcContext;
     }
 
     /**
@@ -25,8 +33,8 @@ public class UserDao {
      * @throws SQLException
      */
     public void add(final User user) throws SQLException {
-        // 메소드 파라미터로 이전한 익명 내부 클래스
-        jdbcContextWithStatementStrategy(
+        // 메소드 파라미터로 이전한 익명 내부 클래스; DI받은 JdbcContext 의 컨텍스트 메소드를 사용하도록 변경한다.
+        this.jdbcContext.workWithStatementStrategy(
             new StatementStrategy() { // 익명 내부 클래스는 구현하는 인터페이스를 생성자처럼 이용해서 오브젝트로 만든다.
                 public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
                     PreparedStatement ps = c.prepareStatement(
@@ -77,8 +85,8 @@ public class UserDao {
      * @throws SQLException
      */
     public void deleteAll() throws SQLException {
-        // 메소드 파라미터로 이전한 익명 내부 클래스
-        jdbcContextWithStatementStrategy(
+        // 메소드 파라미터로 이전한 익명 내부 클래스; DI받은 JdbcContext 의 컨텍스트 메소드를 사용하도록 변경한다.
+        this.jdbcContext.workWithStatementStrategy(
             new StatementStrategy() {// 익명 내부 클래스는 구현하는 인터페이스를 생성자처럼 이용해서 오브젝트로 만든다.
                 public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
                     PreparedStatement ps = c.prepareStatement("delete from users");
@@ -122,25 +130,4 @@ public class UserDao {
         }
     }
 
-    /**
-     * 메소드로 분리한 try/catch/finally 컨텍스트 코드
-     * @param stmt  클라이언트가 컨텍스트를 호출할 때 넘겨줄 전략 파라미터
-     * @throws SQLException
-     */
-    private void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-        try {
-            c = this.dataSource.getConnection();
-
-            ps = stmt.makePreparedStatement(c);
-
-            ps.executeUpdate(); // 여기서 예외가 발생하면 바로 메소드 실행이 중단된다.
-        } catch (SQLException e) {
-            throw e; // 예외가 발생했을 때 부가적인 작업을 해줄 수 있도록 catch 블록을 둔다. 아직은 예외를 다시 메소드 밖으로 던지는 것밖에 없다.
-        } finally { // finally 이므로 try 블록에서 예외가 발생했을 때나 안 했을 때나 모두 실행된다.
-            if(ps != null) try { ps.close(); } catch (SQLException e){} // ps.close()  메소드에서도 SQLException 이 발생할 수 있기 때문에 이를 잡아줘야 한다. 그렇지 않으면 Connection 을 close() 하지 못하고 메소드를 빠져나갈 수 있다.
-            if(c != null) try { c.close();} catch (SQLException e){} // Connection 반환
-        }
-    }
 }
