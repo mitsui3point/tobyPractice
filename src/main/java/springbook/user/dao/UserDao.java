@@ -25,19 +25,20 @@ public class UserDao {
      * @throws SQLException
      */
     public void add(final User user) throws SQLException {
-        class AddStatement implements StatementStrategy {
-            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement(
-                        "insert into users(id, name, password) values(?, ?, ?)");
-                // 로컬(내부) 클래스의 코드에서 외부의 메소드 로컬 변수에 직접 접근할 수 있다.
-                ps.setString(1, user.getId());
-                ps.setString(2, user.getName());
-                ps.setString(3, user.getPassword());
-                return ps;
+        // 메소드 파라미터로 이전한 익명 내부 클래스
+        jdbcContextWithStatementStrategy(
+            new StatementStrategy() { // 익명 내부 클래스는 구현하는 인터페이스를 생성자처럼 이용해서 오브젝트로 만든다.
+                public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                    PreparedStatement ps = c.prepareStatement(
+                            "insert into users(id, name, password) values(?, ?, ?)");
+                    // 로컬(내부) 클래스의 코드에서 외부의 메소드 로컬 변수에 직접 접근할 수 있다.
+                    ps.setString(1, user.getId());
+                    ps.setString(2, user.getName());
+                    ps.setString(3, user.getPassword());
+                    return ps;
+                }
             }
-        }
-        StatementStrategy st = new AddStatement(); // 선정한 전략 클래스의 오브젝트 생성, 생성자 파라미터로 user를 전달하지 않아도 된다.
-        jdbcContextWithStatementStrategy(st); // 컨텍스트 호출. 전략 오브젝트 전달
+        );
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
@@ -76,8 +77,15 @@ public class UserDao {
      * @throws SQLException
      */
     public void deleteAll() throws SQLException {
-        StatementStrategy st = new DeleteAllStatement(); // 선정한 전략 클래스의 오브젝트 생성
-        jdbcContextWithStatementStrategy(st); // 컨텍스트 호출. 전략 오브젝트 전달
+        // 메소드 파라미터로 이전한 익명 내부 클래스
+        jdbcContextWithStatementStrategy(
+            new StatementStrategy() {// 익명 내부 클래스는 구현하는 인터페이스를 생성자처럼 이용해서 오브젝트로 만든다.
+                public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                    PreparedStatement ps = c.prepareStatement("delete from users");
+                    return ps;
+                }
+            }
+        ); // 컨텍스트 호출. 전략 오브젝트 전달
     }
 
     public int getCount() throws SQLException {
