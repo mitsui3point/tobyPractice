@@ -63,8 +63,7 @@ public class UserDao {
         PreparedStatement ps = null;
         try {
             c = this.dataSource.getConnection();
-            ps = c.prepareStatement(
-                    "delete from users");
+            ps = makeStatement(c); // 변하는 부분을 메소드로 추출하고 변하지 않는 부분에서 호출하도록 만들었다.
             ps.executeUpdate(); // 여기서 예외가 발생하면 바로 메소드 실행이 중단된다.
         } catch (SQLException e) {
             throw e; // 예외가 발생했을 때 부가적인 작업을 해줄 수 있도록 catch 블록을 둔다. 아직은 예외를 다시 메소드 밖으로 던지는 것밖에 없다.
@@ -82,6 +81,12 @@ public class UserDao {
                 }
             }
         }
+    }
+
+    private PreparedStatement makeStatement(Connection c) throws SQLException {
+        PreparedStatement ps;
+        ps = c.prepareStatement("delete from users");
+        return ps;
     }
 
     public int getCount() throws SQLException {
