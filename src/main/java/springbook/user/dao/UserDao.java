@@ -10,14 +10,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public abstract class UserDao {
+public class UserDao {
     private DataSource dataSource;
     // 수정자 메서드를 이용하여 생성자 DI 를 대체
     public void setDataSource (DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    abstract protected PreparedStatement makeStatement(Connection c) throws SQLException ;
     public void add(User user) throws SQLException, ClassNotFoundException {
         Connection c = this.dataSource.getConnection();
         PreparedStatement ps = c.prepareStatement(
@@ -65,7 +64,10 @@ public abstract class UserDao {
         PreparedStatement ps = null;
         try {
             c = this.dataSource.getConnection();
-            ps = makeStatement(c); // 변하는 부분을 메소드로 추출하고 변하지 않는 부분에서 호출하도록 만들었다.
+
+            StatementStrategy strategy = new DeleteAllStatement();
+            ps = strategy.makePreparedStatement(c);
+            
             ps.executeUpdate(); // 여기서 예외가 발생하면 바로 메소드 실행이 중단된다.
         } catch (SQLException e) {
             throw e; // 예외가 발생했을 때 부가적인 작업을 해줄 수 있도록 catch 블록을 둔다. 아직은 예외를 다시 메소드 밖으로 던지는 것밖에 없다.
