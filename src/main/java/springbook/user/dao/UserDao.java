@@ -10,12 +10,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserDao {
+public abstract class UserDao {
     private DataSource dataSource;
     // 수정자 메서드를 이용하여 생성자 DI 를 대체
     public void setDataSource (DataSource dataSource) {
         this.dataSource = dataSource;
     }
+
+    abstract protected PreparedStatement makeStatement(Connection c) throws SQLException ;
     public void add(User user) throws SQLException, ClassNotFoundException {
         Connection c = this.dataSource.getConnection();
         PreparedStatement ps = c.prepareStatement(
@@ -81,12 +83,6 @@ public class UserDao {
                 }
             }
         }
-    }
-
-    private PreparedStatement makeStatement(Connection c) throws SQLException {
-        PreparedStatement ps;
-        ps = c.prepareStatement("delete from users");
-        return ps;
     }
 
     public int getCount() throws SQLException {
