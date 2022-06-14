@@ -15,14 +15,15 @@ public class UserDao {
     // UserDao 모든 메소드가 JdbcContext 를 사용하지 않으므로, 기존방법을 사용해서 동작하는 메소드를 위해 UserDao 가 아직은 DataSource 를 DI 받아야 함.
     private DataSource dataSource;
     // 수정자 메서드를 이용하여 생성자 DI 를 대체
-    public void setDataSource (DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    // JdbcContext 를 DI 받도록 만든다.
+    /*
+    JdbcContext 를 DI 받도록 만든다. => JdbcContext 가 Spring 에 의해 DI 받지 않고, UserDao 의 setDataSource 에 의해 DI 받는다.
+     */
     private JdbcContext jdbcContext;
-    public void setJdbcContext(JdbcContext jdbcContext) {
-        this.jdbcContext = jdbcContext;
+
+    public void setDataSource (DataSource dataSource) { // 수정자 메소드이면서 JdbcContext 에 대한 생성, DI 작업을 동시에 수행한다.
+        this.jdbcContext = new JdbcContext(); // JdbcContext 생성(IoC)
+        this.jdbcContext.setDataSource(dataSource); // 의존 오브젝트 주입(DI)
+        this.dataSource = dataSource; // 아직 JdbcContext 를 적용하지 않은 메소드를 위해 저장해둔다.
     }
 
     /**
@@ -32,14 +33,14 @@ public class UserDao {
      * @param user  AddStatement 전략 클래스에서 필요로 하는 추가 정보
      * @throws SQLException
      */
-    public void add(final User user) throws SQLException {
+    public void add(final User user) throws SQLException { //
         // 메소드 파라미터로 이전한 익명 내부 클래스; DI받은 JdbcContext 의 컨텍스트 메소드를 사용하도록 변경한다.
         this.jdbcContext.workWithStatementStrategy(
             new StatementStrategy() { // 익명 내부 클래스는 구현하는 인터페이스를 생성자처럼 이용해서 오브젝트로 만든다.
                 public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
                     PreparedStatement ps = c.prepareStatement(
                             "insert into users(id, name, password) values(?, ?, ?)");
-                    // 로컬(내부) 클래스의 코드에서 외부의 메소드 로컬 변수에 직접 접근할 수 있다.
+                    // 로컬(내부) 클래스의 코드에서 외부의 메소드 로컬 변수에 직접 접근할 수 있다. 단 외부의 메소드 로컬 변수를 사용하려면 외부 메소드 argument 에 final을 붙여주어야 한다.
                     ps.setString(1, user.getId());
                     ps.setString(2, user.getName());
                     ps.setString(3, user.getPassword());

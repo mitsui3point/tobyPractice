@@ -3,12 +3,8 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-    <bean id="jdbcContext" class="springbook.user.dao.JdbcContext"> <!-- 추가된 JdbcContext 타입 빈 -->
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
     <bean id="userDao" class="springbook.user.dao.UserDao" >
         <property name="dataSource" ref="dataSource"/> <!-- UserDao 내에 아직 JdbcContext 를 적용하지 않은 메소드가 있어서 제거하지 않았다 -->
-        <property name="jdbcContext" ref="jdbcContext"/> <!-- 추가된 JdbcContext 타입 빈 DI -->
     </bean>
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="org.mariadb.jdbc.Driver"/>
