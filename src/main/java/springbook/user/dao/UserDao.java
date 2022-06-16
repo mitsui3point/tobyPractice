@@ -81,26 +81,14 @@ public class UserDao {
     }
 
     /**
-     * 클라이언트 책임을 담당할 deleteAll() 메소드
+     * 클라이언트 책임을 담당할 deleteAll() 메소드,
+     * JdbcContext로 옮긴 executeSql()을 사용하는 deleteAll() 메소드
      * deleteAll 클라이언트 책임 1. 선정한 전략 클래스의 오브젝트 생성
      * deleteAll 클라이언트 책임 2. 컨텍스트 호출. 전략 오브젝트 전달
      * @throws SQLException
      */
     public void deleteAll() throws SQLException {
-        executeSql("delete from users"); // 변하는 sql 문장
-    }
-
-    private void executeSql(final String query) throws SQLException {
-        // 메소드 파라미터로 이전한 익명 내부 클래스; DI받은 JdbcContext 의 컨텍스트 메소드를 사용하도록 변경한다.
-        this.jdbcContext.workWithStatementStrategy(
-            // 변하지 않는 콜백 클래스 정의와 오브젝트 생성
-            new StatementStrategy() {// 익명 내부 클래스는 구현하는 인터페이스를 생성자처럼 이용해서 오브젝트로 만든다.
-                public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                    PreparedStatement ps = c.prepareStatement(query);
-                    return ps;
-                }
-            }
-        ); // 컨텍스트 호출. 전략 오브젝트 전달
+        this.jdbcContext.executeSql("delete from users"); // 변하는 sql 문장
     }
 
     public int getCount() throws SQLException {
