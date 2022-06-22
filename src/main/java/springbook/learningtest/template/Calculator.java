@@ -5,17 +5,19 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Calculator {
-    public Integer calcSum(String filepath) throws IOException {
+    /**
+     * BufferedReaderCallback 을 사용하는 템플릿 메소드
+     * @param filepath
+     * @param callback
+     * @return
+     * @throws IOException
+     */
+    public Integer fileReadTemplate(String filepath, BufferedReaderCallback callback) throws IOException {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(filepath)); // 한 줄씩 읽기 편하게 BufferedReader 로 파일을 가져온다.
-            Integer sum = 0;
-            String line = null;
-            while((line = br.readLine()) != null) { // 마지막 라인까지 한 줄씩 읽어가면서 숫자를 더한다.
-                sum += Integer.valueOf(line);
-            }
-            return sum;
-        } catch (IOException e  ) {
+            return callback.doSomethingWithReader(br);
+        } catch (IOException e) {
             System.out.println(e.getMessage());
             throw e;
         } finally {
@@ -24,5 +26,45 @@ public class Calculator {
                 catch (IOException e) {System.out.println(e.getMessage());}
             }
         }
+    }
+
+    /**
+     * 템플릿/콜백을 적용한 calcSum() 메소드
+     * @param filepath
+     * @return
+     * @throws IOException
+     */
+    public Integer calcSum(String filepath) throws IOException {
+        BufferedReaderCallback sumCallback = new BufferedReaderCallback() {
+            public Integer doSomethingWithReader(BufferedReader br) throws IOException {
+                Integer sum = 0;
+                String line = null;
+                while((line = br.readLine()) != null) { // 마지막 라인까지 한 줄씩 읽어가면서 숫자를 더한다.
+                    sum += Integer.valueOf(line);
+                }
+                return sum;
+            }
+        };
+        return this.fileReadTemplate(filepath, sumCallback);
+    }
+
+    /**
+     * 템플릿/콜백을 적용한 calcMultiply() 메소드
+     * @param filepath
+     * @return
+     * @throws IOException
+     */
+    public Integer calcMultiply(String filepath) throws IOException {
+        BufferedReaderCallback multiplyCallback = new BufferedReaderCallback() {
+            public Integer doSomethingWithReader(BufferedReader br) throws IOException {
+                Integer multiply = 1;
+                String line = null;
+                while((line = br.readLine()) != null) { // 마지막 라인까지 한 줄씩 읽어가면서 숫자를 더한다.
+                    multiply *= Integer.valueOf(line);
+                }
+                return multiply;
+            }
+        };
+        return this.fileReadTemplate(filepath, multiplyCallback);
     }
 }
