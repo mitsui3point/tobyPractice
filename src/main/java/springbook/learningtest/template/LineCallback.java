@@ -1,12 +1,11 @@
 package springbook.learningtest.template;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 
 /**
  * line을 전달받는 콜백 인터페이스
  */
-public interface LineCallback {
+public interface LineCallback<T> {
     /**
      * line을 전달받는 콜백 인터페이스
      * @param line
@@ -14,5 +13,5 @@ public interface LineCallback {
      * @return
      * @throws IOException
      */
-    public Integer doSomethingLine(String line, Integer value) throws IOException;
+    T doSomethingLine(String line, T value) throws IOException;
 }

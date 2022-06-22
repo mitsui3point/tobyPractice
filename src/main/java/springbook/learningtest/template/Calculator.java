@@ -7,18 +7,18 @@ import java.io.IOException;
 
 public class Calculator {
     /**
-     * LineCallback 을 사용하는 템플릿 메소드
+     * 타입 파라미터를 추가해서 제네릭 메소드로 만든 lineReadTemplate()
      * @param filepath
      * @param callback
      * @param initVal
      * @return
      * @throws IOException
      */
-    public Integer lineReadTemplate(String filepath, LineCallback callback, int initVal) throws IOException { // initVal; 계산결과를 저장할 변수의 초기값
+    public <T> T lineReadTemplate(String filepath, LineCallback<T> callback, T initVal) throws IOException { // initVal; 계산결과를 저장할 변수의 초기값
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(filepath)); // 한 줄씩 읽기 편하게 BufferedReader 로 파일을 가져온다.
-            Integer res = initVal;
+            T res = initVal;
             String line = null;
             while((line = br.readLine()) != null) { // 파일의 각 라인을 루프로 돌면서 가져오는 것도 템플릿이 담당한다.
                 res = callback.doSomethingLine(line, res); // res; 콜백이 계산한 값을 저장해뒀다가 다음 라인 계산에 다시 사용한다. // line; 각 라인의 내용을 가지고 계산하는 작업만 콜백에 맡긴다
@@ -42,7 +42,7 @@ public class Calculator {
      * @throws IOException
      */
     public Integer calcSum(String filepath) throws IOException {
-        LineCallback sumCallback = new LineCallback() {
+        LineCallback<Integer> sumCallback = new LineCallback<Integer>() {
             @Override
             public Integer doSomethingLine(String line, Integer value) throws IOException {
                 return value + Integer.valueOf(line);
@@ -58,12 +58,28 @@ public class Calculator {
      * @throws IOException
      */
     public Integer calcMultiply(String filepath) throws IOException {
-        LineCallback multiplyCallback = new LineCallback() {
+        LineCallback<Integer> multiplyCallback = new LineCallback<Integer>() {
             @Override
             public Integer doSomethingLine(String line, Integer value) throws IOException {
                 return value * Integer.valueOf(line);
             }
         };
         return this.lineReadTemplate(filepath, multiplyCallback, 1);
+    }
+
+    /**
+     * 템플릿/콜백을 적용한 concatenate() 메소드 ; 문자열 연결 기능
+     * @param filepath
+     * @return
+     * @throws IOException
+     */
+    public String concatenate(String filepath) throws IOException {
+        LineCallback<String> concatenateCallback = new LineCallback<String>() {
+            @Override
+            public String doSomethingLine(String line, String value) throws IOException {
+                return value + line;
+            }
+        };
+        return this.lineReadTemplate(filepath, concatenateCallback, "");
     }
 }
