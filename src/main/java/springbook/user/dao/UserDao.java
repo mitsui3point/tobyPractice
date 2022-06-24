@@ -11,15 +11,11 @@ import java.util.List;
 
 public class UserDao {
 
-    private DataSource dataSource;
-
     private JdbcTemplate jdbcTemplate;
 
     // 수정자 메서드를 이용하여 생성자 DI 를 대체
-    public void setDataSource (DataSource dataSource) { // 수정자 메소드
-        this.jdbcTemplate = new JdbcTemplate();
-        this.jdbcTemplate.setDataSource(dataSource);
-        this.dataSource = dataSource;
+    public void setJdbcTemplate (DataSource dataSource) { // 수정자 메소드
+        this.jdbcTemplate = new JdbcTemplate(dataSource); // DataSource 오브젝트는 JdbcTemplate을 만든 후에는 사용하지 않으니 저장해두지 않아도 된다.
     }
 
     /**
