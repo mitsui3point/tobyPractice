@@ -13,10 +13,28 @@ public class UserDao {
 
     private JdbcTemplate jdbcTemplate;
 
-    // 수정자 메서드를 이용하여 생성자 DI 를 대체
+    /**
+     * 수정자 메서드를 이용하여 생성자 DI 를 대체
+     * @param dataSource
+     */
     public void setJdbcTemplate (DataSource dataSource) { // 수정자 메소드
         this.jdbcTemplate = new JdbcTemplate(dataSource); // DataSource 오브젝트는 JdbcTemplate을 만든 후에는 사용하지 않으니 저장해두지 않아도 된다.
     }
+
+    /**
+     * ResultSet 한 로우의 결과를 오브젝트에 매핑해주는 RowMapper 콜백; 인스턴스변수에 할당
+     * @return
+     */
+    private RowMapper<User> userMapper =  new RowMapper<User>() {
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            User user = new User();
+            user.setId(rs.getString("id"));
+            user.setName(rs.getString("name"));
+            user.setPassword(rs.getString("password"));
+            return user;
+        }
+    };
 
     /**
      * JdbcTemplate 을 적용한 add() 메소드
@@ -41,16 +59,7 @@ public class UserDao {
     public User get(String id) {
         return this.jdbcTemplate.queryForObject("select * from users where id = ?",
             new Object[] {id}, // SQL 에 바인딩할 파라미터 값, 가변인자 대신 배열을 사용한다.
-            new RowMapper<User>() { // ResultSet 한 로우의 결과를 오브젝트에 매핑해주는 RowMapper 콜백
-                @Override
-                public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    User user = new User();
-                    user.setId(rs.getString("id"));
-                    user.setName(rs.getString("name"));
-                    user.setPassword(rs.getString("password"));
-                    return user;
-                }
-            }
+            this.userMapper
         );
     }
 
@@ -78,17 +87,6 @@ public class UserDao {
      * @return
      */
     public List<User> getAll() {
-        return this.jdbcTemplate.query("select * from users order by id",
-            new RowMapper<User>() {
-                @Override
-                public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    User user = new User();
-                    user.setId(rs.getString("id"));
-                    user.setName(rs.getString("name"));
-                    user.setPassword(rs.getString("password"));
-                    return user;
-                }
-            }
-        );
+        return this.jdbcTemplate.query("select * from users order by id", this.userMapper);
     }
 }
