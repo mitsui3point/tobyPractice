@@ -1,10 +1,15 @@
 package springbook.user.dao;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import springbook.user.domain.User;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -28,11 +33,16 @@ public class UserDao {
      * @throws SQLException
      */
     public void add(final User user) throws SQLException {
-        this.jdbcTemplate.update("insert into users(id, name, password) values(?, ?, ?)",
-                user.getId(),
-                user.getName(),
-                user.getPassword()
-        );
+            this.jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                PreparedStatement ps = con.prepareStatement("insert into users(id, name, password) values(?, ?, ?)");
+                ps.setString(1, user.getId());
+                ps.setString(2, user.getName());
+                ps.setString(3, user.getPassword());
+                return ps;
+            }
+        });
     }
 
     /**
@@ -63,7 +73,12 @@ public class UserDao {
      * @throws SQLException
      */
     public void deleteAll() throws SQLException {
-        this.jdbcTemplate.update("delete from users");
+        this.jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                return con.prepareStatement("delete from users");
+            }
+        });
     }
 
     /**
@@ -73,6 +88,20 @@ public class UserDao {
      * @throws SQLException
      */
     public int getCount() throws SQLException {
-        return this.jdbcTemplate.queryForInt("select count(*) from users");
+        return this.jdbcTemplate.query(
+            new PreparedStatementCreator() {
+                @Override
+                public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                    return con.prepareStatement("select count(*) from users");
+                }
+            },
+            new ResultSetExtractor<Integer>() {
+                @Override
+                public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+                    rs.next();
+                    return rs.getInt(1);
+                }
+            }
+        );
     }
 }
