@@ -1,9 +1,7 @@
 package springbook.user.dao;
 
-
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import springbook.user.domain.User;
 
 import javax.sql.DataSource;
@@ -78,38 +76,14 @@ public class UserDao {
         this.jdbcTemplate.update("delete from users");
     }
 
+    /**
+     * JdbcTemplate 을 적용한 getCount() 메소드
+     * jdbcTemplate.queryForInt() 메소드 사용
+     * @return
+     * @throws SQLException
+     */
     public int getCount() throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            c = dataSource.getConnection();
-
-            ps = c.prepareStatement("select count(*) from users");
-            // ResultSet 도 다양한 SQLException 이 발생할 수 있는 코드이므로 try 블록 안에 둬야 한다.
-            rs = ps.executeQuery();
-            rs.next();
-            return rs.getInt(1);
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if(rs != null) {
-                try {
-                    rs.close(); // 만들어진 ResultSet 을 닫아주는 기능. close() 는 만들어진 순서의 반대로 하는 것이 원칙이다.
-                } catch (SQLException e) {}
-            }
-            if(ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {}
-            }
-            if(c != null) {
-                try {
-                    c.close();
-                } catch (SQLException e) {}
-            }
-        }
+        return this.jdbcTemplate.queryForInt("select count(*) from users");
     }
 
 }
