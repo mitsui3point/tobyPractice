@@ -42,7 +42,7 @@ public class UserDao {
      * @param user  AddStatement 전략 클래스에서 필요로 하는 추가 정보
      * @throws SQLException
      */
-    public void add(final User user) throws SQLException {
+    public void add(final User user) {
         this.jdbcTemplate.update("insert into users(id, name, password) values(?, ?, ?)",
                 user.getId(),
                 user.getName(),
@@ -68,7 +68,7 @@ public class UserDao {
      * jdbcTemplate.update() 메소드 두개 중 sql 을 받는 메소드를 사용
      * @throws SQLException
      */
-    public void deleteAll() throws SQLException {
+    public void deleteAll() {
         this.jdbcTemplate.update("delete from users");
     }
 
@@ -78,7 +78,7 @@ public class UserDao {
      * @return
      * @throws SQLException
      */
-    public int getCount() throws SQLException {
+    public int getCount() {
         return this.jdbcTemplate.queryForInt("select count(*) from users");
     }
 
