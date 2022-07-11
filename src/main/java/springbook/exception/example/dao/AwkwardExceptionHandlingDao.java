@@ -29,11 +29,7 @@ public class AwkwardExceptionHandlingDao {
             rs.next();
             result = rs.getInt(1);
         } catch (SQLException e) {
-            /**
-             * 예외를 잡고 아무것도 하지 않는다.
-             * 예외 발생을 무시해버리고 정상적인 상황인 것 처럼 다음 라인으로 넘어가겠다는 분명한 의도가 있는게 아니라면,
-             * 연습 중에도 절대 만들어서는 안 되는 코드다.
-             * */
+            System.out.println(e);
         } finally {
             // 예시와는 상관없는 자원반환 exception
             resourceClose(c, ps, rs);
