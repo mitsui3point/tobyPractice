@@ -29,7 +29,8 @@ public class AwkwardExceptionHandlingDao {
             rs.next();
             result = rs.getInt(1);
         } catch (SQLException e) {
-            System.out.println(e);
+            e.printStackTrace();
+            System.exit(1);
         } finally {
             // 예시와는 상관없는 자원반환 exception
             resourceClose(c, ps, rs);
