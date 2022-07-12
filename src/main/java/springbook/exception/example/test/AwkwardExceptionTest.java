@@ -26,8 +26,20 @@ public class AwkwardExceptionTest {
         this.dao = this.context.getBean("awkwardExceptionHandlingDao", AwkwardExceptionHandlingDao.class);
     }
 
+    /**
+     * 통과하지 않는 잘못된 예시 test code
+     */
     @Test(expected = SQLException.class)
     public void getCountFailure() {
         dao.getCount();
+    }
+
+    /**
+     * 무의미하고 무책임한 throws 남발 예시 test code
+     * @throws Exception
+     */
+    @Test(expected = Exception.class)
+    public void method1Failure() throws Exception {
+        dao.method1();
     }
 }
