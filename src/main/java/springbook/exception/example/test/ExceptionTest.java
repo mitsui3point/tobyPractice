@@ -7,10 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import springbook.exception.example.dao.ExceptionAvoidanceExample;
 import springbook.exception.example.dao.ExceptionRecoveryExample;
 import springbook.exception.example.exception.RetryFailedException;
+import springbook.user.domain.User;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,17 +26,23 @@ public class ExceptionTest {
     @Autowired
     private ApplicationContext context;
 
-    private ExceptionRecoveryExample example;
+    private ExceptionRecoveryExample recoveryExample;
+    private ExceptionAvoidanceExample avoidanceExample;
 
     private List<String> expectedFileReadResult;
+    private User user;
 
     @Before
     public void setUp() {
-        this.example = this.context.getBean("exceptionRecoveryExample", ExceptionRecoveryExample.class);
+        this.recoveryExample = this.context.getBean("exceptionRecoveryExample", ExceptionRecoveryExample.class);
+        this.avoidanceExample = this.context.getBean("exceptionAvoidanceExample", ExceptionAvoidanceExample.class);
+
         this.expectedFileReadResult = new ArrayList<String>();
         this.expectedFileReadResult.add("hello");
         this.expectedFileReadResult.add("how are you");
         this.expectedFileReadResult.add("nice to meet you!");
+
+        this.user = new User("gyumee", "박성철", "springno1");
     }
 
     /**
@@ -42,7 +51,7 @@ public class ExceptionTest {
      */
     @Test(expected = RetryFailedException.class)
     public void retryFailExceptionTest() throws IOException {
-        example.fileReadLine(true);
+        recoveryExample.fileReadLine(true);
     }
 
     /**
@@ -51,10 +60,30 @@ public class ExceptionTest {
      */
     @Test
     public void fileReadTest() throws IOException {
-        List<String> fileReadList = example.fileReadLine(false);
+        List<String> fileReadList = recoveryExample.fileReadLine(false);
         assertThat(fileReadList.size(), is(3));
         for (int i = 0; i < fileReadList.size(); i++) {
             assertThat(fileReadList.get(i), is(expectedFileReadResult.get(i)));
         }
+    }
+
+    /**
+     * 예외처리 회피 메소드 예시; declaration
+     * @throws SQLException
+     */
+    @Test(expected = SQLException.class)
+    public void addDeclarationAvoidTest() throws SQLException {
+        avoidanceExample.deleteAll();
+        avoidanceExample.addDeclarationAvoid(this.user);
+    }
+
+    /**
+     * 예외처리 회피 메소드 예시; try catch
+     * @throws SQLException
+     */
+    @Test(expected = SQLException.class)
+    public void addTryCatchAvoidTest() throws SQLException {
+        avoidanceExample.deleteAll();
+        avoidanceExample.addTryCatchAvoid(this.user);
     }
 }
