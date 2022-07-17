@@ -3,6 +3,7 @@ package springbook.exception.example.dao;
 import com.mysql.cj.exceptions.MysqlErrorNumbers;
 import org.springframework.jdbc.core.JdbcTemplate;
 import springbook.exception.example.exception.DuplicateUserIdException;
+import springbook.exception.example.exception.TranslateToRuntimeException;
 import springbook.user.domain.User;
 
 import javax.sql.DataSource;
@@ -47,10 +48,13 @@ public class ExceptionTranslateExample {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             // ErrorCode 가 MariaDB 의 "Duplicate Entry(1062)" 이면 예외 전환
-            if(e.getErrorCode() == MysqlErrorNumbers.ER_DUP_ENTRY)
+            if(e.getErrorCode() == MysqlErrorNumbers.ER_DUP_ENTRY) {
                 throw new DuplicateUserIdException(e);
-            else
-                throw e;
+            /* SQLException(;extends Exception, 체크예외) 인 경우
+             * TranslateToRuntimeException(;RuntimeException, 언체크 예외) 로 감싸서 예외 전환 */
+            } else {
+                throw new TranslateToRuntimeException(e);
+            }
         } finally {
             if (pstmt != null) pstmt.close();
             if (c != null) c.close();

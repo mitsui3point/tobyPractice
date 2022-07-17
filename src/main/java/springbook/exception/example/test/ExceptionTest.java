@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.exception.example.dao.*;
 import springbook.exception.example.exception.DuplicateUserIdException;
 import springbook.exception.example.exception.RetryFailedException;
+import springbook.exception.example.exception.TranslateToRuntimeException;
 import springbook.user.domain.User;
 
 import java.io.IOException;
@@ -32,6 +33,7 @@ public class ExceptionTest {
 
     private List<String> expectedFileReadResult;
     private User user;
+    private User user2;
 
     @Before
     public void setUp() {
@@ -45,6 +47,7 @@ public class ExceptionTest {
         this.expectedFileReadResult.add("nice to meet you!");
 
         this.user = new User("gyumee", "박성철", "springno1");
+        this.user2 = new User("gyumeegyumee", "박성철", "springno1");
     }
 
     /**
@@ -98,5 +101,17 @@ public class ExceptionTest {
         translateExample.deleteAll();
         translateExample.add(this.user);
         translateExample.add(this.user);
+    }
+
+    /**
+     * 예외 전환 메소드 예시; 런타임 예외로 전환
+     * @throws SQLException
+     */
+    @Test(expected = TranslateToRuntimeException.class)
+    public void addTranslateRuntimeExceptionTest() throws DuplicateUserIdException, SQLException {
+        // userId.length = 12 > ID varchar(10)
+        // SQLException! => TranslateToRuntimeException
+        translateExample.deleteAll();
+        translateExample.add(this.user2);
     }
 }
