@@ -12,12 +12,16 @@
         <property name="username" value="root"/>
         <property name="password" value="password"/>
     </bean>
+
     <bean id="awkwardExceptionHandlingDao" class="springbook.exception.example.dao.AwkwardExceptionHandlingDao" >
         <property name="dataSource" ref="dataSource"/>
     </bean>
     <bean id="awkwardExceptionExample" class="springbook.exception.example.dao.AwkwardExceptionExample"/>
     <bean id="exceptionRecoveryExample" class="springbook.exception.example.dao.ExceptionRecoveryExample"/>
     <bean id="exceptionAvoidanceExample" class="springbook.exception.example.dao.ExceptionAvoidanceExample">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="exceptionTranslateExample" class="springbook.exception.example.dao.ExceptionTranslateExample">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 </beans>

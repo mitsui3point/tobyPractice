@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import springbook.exception.example.dao.ExceptionAvoidanceExample;
-import springbook.exception.example.dao.ExceptionRecoveryExample;
+import springbook.exception.example.dao.*;
+import springbook.exception.example.exception.DuplicateUserIdException;
 import springbook.exception.example.exception.RetryFailedException;
 import springbook.user.domain.User;
 
@@ -28,6 +28,7 @@ public class ExceptionTest {
 
     private ExceptionRecoveryExample recoveryExample;
     private ExceptionAvoidanceExample avoidanceExample;
+    private ExceptionTranslateExample translateExample;
 
     private List<String> expectedFileReadResult;
     private User user;
@@ -36,6 +37,7 @@ public class ExceptionTest {
     public void setUp() {
         this.recoveryExample = this.context.getBean("exceptionRecoveryExample", ExceptionRecoveryExample.class);
         this.avoidanceExample = this.context.getBean("exceptionAvoidanceExample", ExceptionAvoidanceExample.class);
+        this.translateExample = this.context.getBean("exceptionTranslateExample", ExceptionTranslateExample.class);
 
         this.expectedFileReadResult = new ArrayList<String>();
         this.expectedFileReadResult.add("hello");
@@ -85,5 +87,16 @@ public class ExceptionTest {
     public void addTryCatchAvoidTest() throws SQLException {
         avoidanceExample.deleteAll();
         avoidanceExample.addTryCatchAvoid(this.user);
+    }
+
+    /**
+     * 예외 전환 메소드 예시
+     * @throws SQLException
+     */
+    @Test(expected = DuplicateUserIdException.class)
+    public void addDuplicationExceptionTest() throws DuplicateUserIdException, SQLException {
+        translateExample.deleteAll();
+        translateExample.add(this.user);
+        translateExample.add(this.user);
     }
 }
