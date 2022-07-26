@@ -25,6 +25,7 @@ import java.sql.SQLException;
 public class ExceptionTranslateExample {
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
+    private BigDecimal INIT_BALANCE = new BigDecimal(3000);
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -75,5 +76,39 @@ public class ExceptionTranslateExample {
      */
     public void deleteAll() {
         this.jdbcTemplate.update("delete from users");
+    }
+
+    /**
+     * 애플리케이션 예외; 예금 인출 처리 코드
+     * @param withdrawalAmount
+     * @return
+     */
+    public BigDecimal subtractBalance(BigDecimal withdrawalAmount) throws InsufficientBalanceException {
+        Account account = new Account();
+        account.setBalance(INIT_BALANCE);
+        BigDecimal balance = null;
+        try {
+            // 계좌 잔고에서 인출
+            balance = withdraw(account.getBalance(), withdrawalAmount);
+        } catch (InsufficientBalanceException e) {
+            // InsufficientBalanceException 에 담긴 인출 가능한 잔고금액 정보를 가져옴
+            throw e;
+        }
+        return balance;
+    }
+
+    /**
+     * 애플리케이션 예외; 예금 인출 메소드
+     * @param balance
+     * @param withdrawalAmount
+     * @return
+     * @throws InsufficientBalanceException
+     */
+    private BigDecimal withdraw(BigDecimal balance, BigDecimal withdrawalAmount) throws InsufficientBalanceException {
+        BigDecimal result = balance.subtract(withdrawalAmount);
+        if(result.compareTo(new BigDecimal(0)) == -1) {
+            throw new InsufficientBalanceException(balance);
+        }
+        return balance.subtract(withdrawalAmount);
     }
 }

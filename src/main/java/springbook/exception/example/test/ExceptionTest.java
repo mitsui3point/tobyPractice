@@ -116,4 +116,20 @@ public class ExceptionTest {
         translateExample.deleteAll();
         translateExample.add(this.user2);
     }
+
+    /**
+     * 애플리케이션 예외; 예금 인출 처리 코드 테스트
+     */
+    @Test
+    public void subtractBalanceTest() throws InsufficientBalanceException {
+        assertThat(translateExample.subtractBalance(new BigDecimal(2999)), is(new BigDecimal(1)));
+    }
+
+    /**
+     * 애플리케이션 예외; 예금 인출 처리 코드 예외 테스트
+     */
+    @Test(expected = InsufficientBalanceException.class)
+    public void subtractBalanceInsufficientTest() throws InsufficientBalanceException {
+        translateExample.subtractBalance(new BigDecimal(3001));
+    }
 }
