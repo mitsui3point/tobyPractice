@@ -1,18 +1,19 @@
 package springbook.exception.example.dao;
 
-import com.mysql.cj.exceptions.MysqlErrorNumbers;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import springbook.exception.example.domain.Account;
 import springbook.exception.example.exception.DuplicateUserIdException;
 import springbook.exception.example.exception.InsufficientBalanceException;
-import springbook.exception.example.exception.TranslateToRuntimeException;
 import springbook.user.domain.User;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.SQLSyntaxErrorException;
 
 /**
  * 예외 전환(exception translation)
@@ -23,11 +24,9 @@ import java.sql.SQLException;
  *  발생한 예외를 그대로 넘기는 게 아니라 적절한 예외로 전환해서 던진다는 특징이 있다.
  */
 public class ExceptionTranslateExample {
-    private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
     private BigDecimal INIT_BALANCE = new BigDecimal(3000);
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public void setJdbcTemplate(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
@@ -38,36 +37,24 @@ public class ExceptionTranslateExample {
      * @param user
      * @throws SQLException
      */
-    public void add(User user) throws DuplicateUserIdException {
-        Connection c = null;
-        PreparedStatement pstmt = null;
+    public void add(User user) throws DuplicateUserIdException { // 애플리케이션 레벨의 체크 예외
         try {
-            // JDBC를 이용해 user 정보를 DB 에 추가하는 코드 또는
-            // 그런 기능을 가진 다른 SQLException 을 던지는 메소드를 호출하는 코드
-            c = dataSource.getConnection();
-            pstmt = c.prepareStatement("insert into users(id, name, password) values(?, ?, ?)");
-            pstmt.setString(1, user.getId());
-            pstmt.setString(2, user.getName());
-            pstmt.setString(3, user.getPassword());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            // ErrorCode 가 MariaDB 의 "Duplicate Entry(1062)" 이면 예외 전환
-            if(e.getErrorCode() == MysqlErrorNumbers.ER_DUP_ENTRY) {
-                throw new DuplicateUserIdException(e);
-            /* SQLException(;extends Exception, 체크예외) 인 경우
-             * TranslateToRuntimeException(;RuntimeException, 언체크 예외) 로 감싸서 예외 전환 */
+            // jdbcTemplate 을 이용해 User 를 add 하는 코드
+            jdbcTemplate.update("insert into users(id, name, password) values(?, ?, ?)",
+                    user.getId(),
+                    user.getName(),
+                    user.getPassword());
+        } catch (DataIntegrityViolationException e) {
+            if(e.getCause() instanceof SQLIntegrityConstraintViolationException){
+                throw new DuplicateUserIdException(e); // 예외를 전환할 때는 원인이 되는 예외를 중첩하는 것이 좋다.
+            } else if(e.getCause() instanceof SQLSyntaxErrorException) {
+                throw e;
             } else {
-                throw new TranslateToRuntimeException(e);
+                throw e;
             }
-        } finally {
-            if (pstmt != null) {
-                try {pstmt.close();}
-                catch (SQLException e) {throw new RuntimeException(e);}
-            }
-            if (c != null) {
-                try {c.close();}
-                catch (SQLException e) {throw new RuntimeException(e);}
-            }
+        } catch (DataAccessException e) {
+            // 로그를 남기는 등의 필요한 작업
+            throw e;
         }
     }
 

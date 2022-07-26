@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.exception.example.dao.*;
@@ -96,7 +98,6 @@ public class ExceptionTest {
 
     /**
      * 예외 전환 메소드 예시
-     * @throws SQLException
      */
     @Test(expected = DuplicateUserIdException.class)
     public void addDuplicationExceptionTest() {
@@ -106,13 +107,13 @@ public class ExceptionTest {
     }
 
     /**
-     * 예외 전환 메소드 예시; 런타임 예외로 전환
-     * @throws SQLException
+     * jdbcTemplate 활용에 따른
+     * SQLException => DataAccessException 예외처리 방식 변경
      */
-    @Test(expected = TranslateToRuntimeException.class)
+    @Test(expected = DataIntegrityViolationException.class)
     public void addTranslateRuntimeExceptionTest() {
         // userId.length = 12 > ID varchar(10)
-        // SQLException! => TranslateToRuntimeException
+        // DataAccessException
         translateExample.deleteAll();
         translateExample.add(this.user2);
     }
