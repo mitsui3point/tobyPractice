@@ -2,11 +2,14 @@ package springbook.exception.example.dao;
 
 import com.mysql.cj.exceptions.MysqlErrorNumbers;
 import org.springframework.jdbc.core.JdbcTemplate;
+import springbook.exception.example.domain.Account;
 import springbook.exception.example.exception.DuplicateUserIdException;
+import springbook.exception.example.exception.InsufficientBalanceException;
 import springbook.exception.example.exception.TranslateToRuntimeException;
 import springbook.user.domain.User;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -34,7 +37,7 @@ public class ExceptionTranslateExample {
      * @param user
      * @throws SQLException
      */
-    public void add(User user) throws DuplicateUserIdException, SQLException {
+    public void add(User user) throws DuplicateUserIdException {
         Connection c = null;
         PreparedStatement pstmt = null;
         try {
@@ -56,8 +59,14 @@ public class ExceptionTranslateExample {
                 throw new TranslateToRuntimeException(e);
             }
         } finally {
-            if (pstmt != null) pstmt.close();
-            if (c != null) c.close();
+            if (pstmt != null) {
+                try {pstmt.close();}
+                catch (SQLException e) {throw new RuntimeException(e);}
+            }
+            if (c != null) {
+                try {c.close();}
+                catch (SQLException e) {throw new RuntimeException(e);}
+            }
         }
     }
 

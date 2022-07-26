@@ -9,11 +9,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.exception.example.dao.*;
 import springbook.exception.example.exception.DuplicateUserIdException;
+import springbook.exception.example.exception.InsufficientBalanceException;
 import springbook.exception.example.exception.RetryFailedException;
 import springbook.exception.example.exception.TranslateToRuntimeException;
 import springbook.user.domain.User;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +99,7 @@ public class ExceptionTest {
      * @throws SQLException
      */
     @Test(expected = DuplicateUserIdException.class)
-    public void addDuplicationExceptionTest() throws DuplicateUserIdException, SQLException {
+    public void addDuplicationExceptionTest() {
         translateExample.deleteAll();
         translateExample.add(this.user);
         translateExample.add(this.user);
@@ -108,7 +110,7 @@ public class ExceptionTest {
      * @throws SQLException
      */
     @Test(expected = TranslateToRuntimeException.class)
-    public void addTranslateRuntimeExceptionTest() throws DuplicateUserIdException, SQLException {
+    public void addTranslateRuntimeExceptionTest() {
         // userId.length = 12 > ID varchar(10)
         // SQLException! => TranslateToRuntimeException
         translateExample.deleteAll();
